@@ -1,10 +1,11 @@
 const {LambdaToDynamoDbAccessRole2} = require('./iam')
-
+const {L2LOnSuccessTopic1} = require('./sns')
 const {Construct} = require('constructs')
 const lambda = require('aws-cdk-lib/aws-lambda')
 const lambda_nodejs = require('aws-cdk-lib/aws-lambda-nodejs')
-const {Duration} = require('aws-cdk-lib')
-
+const {Duration, aws_lambda_destinations} = require('aws-cdk-lib')
+const {MyQueue} = require('./sqs')
+const {SqsEventSource} = require("aws-cdk-lib/aws-lambda-event-sources");
 
 class LambdaFunction1 extends Construct {
     func = null
@@ -17,11 +18,13 @@ class LambdaFunction1 extends Construct {
             functionName: 'LambdaFunction1',
             runtime: lambda.Runtime.NODEJS_16_X,
             handler: 'index.handler',
-            code: lambda.Code.fromAsset('lambda'),
+            code: lambda.Code.fromAsset('lambda/test-function1'),
             memorySize: 1024,
-            timeout: Duration.seconds(60),
-            // role: LambdaToDynamoDbAccessRole2.role
+            timeout: Duration.seconds(30),
+            // role: new LambdaToDynamoDbAccessRole2(this, 'LambdaToDynamoDbAccessRole2').role
         })
+        // func.addEventSource(new SqsEventSource(new MyQueue(this, 'MyQueue').queue))
+        // this.func = func
     }
 }
 
@@ -32,7 +35,7 @@ class LambdaFunction2 extends Construct {
         super(scope, id);
 
         this.func = new lambda_nodejs.NodejsFunction(this, 'LambdaFunction2', {
-            entry: 'lambda/index.js',
+            entry: 'lambda/test-function2/index.js',
             handler: 'handler',
             functionName: 'LambdaFunction2',
             memorySize: 1024,
@@ -52,9 +55,10 @@ class LambdaFunction3 extends Construct {
             functionName: 'LambdaFunction3',
             runtime: lambda.Runtime.NODEJS_16_X,
             handler: 'index.handler',
-            code: lambda.Code.fromAsset('lambda'),
+            code: lambda.Code.fromAsset('lambda/test-function3'),
             memorySize: 1024,
             timeout: Duration.seconds(60),
+            // onSuccess: new aws_lambda_destinations.SnsDestination(new L2LOnSuccessTopic1(this, 'L2LOnSuccessTopic1').topic)
             // role: LambdaToDynamoDbAccessRole2.role
         })
     }

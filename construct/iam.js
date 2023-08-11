@@ -1,7 +1,7 @@
 const {ServicePrincipal, Role, ManagedPolicy} = require("aws-cdk-lib/aws-iam");
 const {Construct} = require('constructs')
 
-class LambdaToDynamoDbAccessRole2 extends Construct {
+class LambdaPublisherRole extends Construct {
     role = null
 
     constructor(scope, id) {
@@ -10,13 +10,14 @@ class LambdaToDynamoDbAccessRole2 extends Construct {
             roleName: 'LambdaToDynamoDBAccessRole2',
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
             managedPolicies: [
-                ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
-                ManagedPolicy.fromAwsManagedPolicyName('AmazonDynamoDBFullAccess')
+                // TODO ポリシー変更
+                // ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+                // ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaSQSQueueExecutionRole')
             ]
         })
     }
 }
 
 module.exports = {
-    LambdaToDynamoDbAccessRole2
+    LambdaToDynamoDbAccessRole2: LambdaPublisherRole
 }
