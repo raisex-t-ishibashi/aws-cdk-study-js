@@ -6,6 +6,7 @@ const lambda_nodejs = require('aws-cdk-lib/aws-lambda-nodejs')
 const {Duration, aws_lambda_destinations} = require('aws-cdk-lib')
 const {MyQueue} = require('./sqs')
 const {SqsEventSource} = require("aws-cdk-lib/aws-lambda-event-sources");
+const logs = require("aws-cdk-lib/aws-logs");
 
 class LambdaFunction1 extends Construct {
     func = null
@@ -21,6 +22,7 @@ class LambdaFunction1 extends Construct {
             code: lambda.Code.fromAsset('lambda/test-function1'),
             memorySize: 1024,
             timeout: Duration.seconds(30),
+            logRetention: logs.RetentionDays.THREE_DAYS,
             // role: new LambdaToDynamoDbAccessRole2(this, 'LambdaToDynamoDbAccessRole2').role
         })
         // func.addEventSource(new SqsEventSource(new MyQueue(this, 'MyQueue').queue))
@@ -40,6 +42,7 @@ class LambdaFunction2 extends Construct {
             functionName: 'LambdaFunction2',
             memorySize: 1024,
             timeout: Duration.seconds(60),
+            logRetention: logs.RetentionDays.THREE_DAYS,
             // role: LambdaToDynamoDbAccessRole2.role
         })
     }
@@ -58,6 +61,7 @@ class LambdaFunction3 extends Construct {
             code: lambda.Code.fromAsset('lambda/test-function3'),
             memorySize: 1024,
             timeout: Duration.seconds(60),
+            logRetention: logs.RetentionDays.THREE_DAYS,
             // onSuccess: new aws_lambda_destinations.SnsDestination(new L2LOnSuccessTopic1(this, 'L2LOnSuccessTopic1').topic)
             // role: LambdaToDynamoDbAccessRole2.role
         })
