@@ -8,7 +8,7 @@ class LambdaToDynamoDBAccessRole extends Construct {
     constructor(scope, id) {
         super(scope, id);
 
-        const role = new iam.Role(this, 'LambdaToDynamoDBAccessRole', {
+        this.role = new iam.Role(this, 'LambdaToDynamoDBAccessRole', {
             roleName: 'LambdaToDynamoDBAccessRole',
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
             managedPolicies: [
@@ -16,7 +16,6 @@ class LambdaToDynamoDBAccessRole extends Construct {
                 iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonDynamoDBFullAccess')
             ]
         })
-        this.role = role
     }
 }
 
@@ -26,36 +25,43 @@ class LambdaPublisherRole extends Construct {
     constructor(scope, id) {
         super(scope, id);
 
-        const policy = {
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Sid": "VisualEditor0",
-                    "Effect": "Allow",
-                    "Action": [
-                        "events:PutEvents",
-                        "sns:Publish",
-                        "sqs:SendMessage"
-                    ],
-                    "Resource": [
-                        "arn:aws:sqs:ap-northeast-1:717366958267:*",
-                        "arn:aws:sns:ap-northeast-1:717366958267:*",
-                        "arn:aws:events:ap-northeast-1:717366958267:event-bus/*"
-                    ]
-                }
-            ]
-        }
+        const snsTopicPolicy = new iam.PolicyStatement({
+            actions: ['sns:publish'],
+            resources: ['*'],
+        });
 
         const role = new Role(this, 'LambdaPublisherRole', {
             roleName: 'LambdaPublisherRole',
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+            managedPolicies: [
+                iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+            ]
         })
-        role.addToPolicy(PolicyStatement.fromJson(policy))
+        role.addToPolicy(snsTopicPolicy)
         this.role = role
     }
 }
 
+
+class StandardLambdaRole extends Construct {
+    role = null
+
+    constructor(scope, id) {
+        super(scope, id);
+
+        this.role = new Role(this, 'StandardLambdaRole', {
+            roleName: 'StandardLambdaRole',
+            assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+            managedPolicies: [
+                iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+            ]
+        })
+    }
+}
+
+
 module.exports = {
     LambdaToDynamoDBAccessRole,
-    // LambdaPublisherRole
+    LambdaPublisherRole,
+    StandardLambdaRole
 }

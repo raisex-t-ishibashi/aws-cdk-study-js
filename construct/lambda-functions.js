@@ -11,7 +11,7 @@ const logs = require("aws-cdk-lib/aws-logs");
 class LambdaFunction1 extends Construct {
     func = null
 
-    constructor(scope, id) {
+    constructor(scope, id, props) {
         super(scope, id);
 
         // Lambda Function
@@ -19,14 +19,12 @@ class LambdaFunction1 extends Construct {
             functionName: 'LambdaFunction1',
             runtime: lambda.Runtime.NODEJS_16_X,
             handler: 'index.handler',
-            code: lambda.Code.fromAsset('lambda/test-function1'),
+            code: lambda.Code.fromAsset('lambda/lambda-function1'),
             memorySize: 1024,
             timeout: Duration.seconds(30),
             logRetention: logs.RetentionDays.THREE_DAYS,
-            // role: new LambdaToDynamoDbAccessRole2(this, 'LambdaToDynamoDbAccessRole2').role
+            role: props.role
         })
-        // func.addEventSource(new SqsEventSource(new MyQueue(this, 'MyQueue').queue))
-        // this.func = func
     }
 }
 
@@ -43,7 +41,6 @@ class LambdaFunction2 extends Construct {
             memorySize: 1024,
             timeout: Duration.seconds(60),
             logRetention: logs.RetentionDays.THREE_DAYS,
-            // role: LambdaToDynamoDbAccessRole2.role
         })
     }
 }
@@ -51,19 +48,21 @@ class LambdaFunction2 extends Construct {
 class LambdaFunction3 extends Construct {
     func = null
 
-    constructor(scope, id) {
+    constructor(scope, id, props) {
         super(scope, id);
 
         this.func = new lambda.Function(this, 'LambdaFunction3', {
             functionName: 'LambdaFunction3',
             runtime: lambda.Runtime.NODEJS_16_X,
             handler: 'index.handler',
-            code: lambda.Code.fromAsset('lambda/test-function3'),
+            code: lambda.Code.fromAsset('lambda/lambda-function3'),
             memorySize: 1024,
             timeout: Duration.seconds(60),
             logRetention: logs.RetentionDays.THREE_DAYS,
-            // onSuccess: new aws_lambda_destinations.SnsDestination(new L2LOnSuccessTopic1(this, 'L2LOnSuccessTopic1').topic)
-            // role: LambdaToDynamoDbAccessRole2.role
+            role: props.role,
+            environment: {
+                SNS_TOPIC_ARN_PARAM_NAME: props.SNS_TOPIC_ARN_PARAM_NAME,
+            },
         })
     }
 }
