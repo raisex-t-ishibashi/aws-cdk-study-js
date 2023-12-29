@@ -1,11 +1,7 @@
-const {LambdaToDynamoDbAccessRole2} = require('./iam')
-const {L2LOnSuccessTopic1} = require('./sns')
 const {Construct} = require('constructs')
 const lambda = require('aws-cdk-lib/aws-lambda')
 const lambda_nodejs = require('aws-cdk-lib/aws-lambda-nodejs')
-const {Duration, aws_lambda_destinations} = require('aws-cdk-lib')
-const {MyQueue} = require('./sqs')
-const {SqsEventSource} = require("aws-cdk-lib/aws-lambda-event-sources");
+const {Duration} = require('aws-cdk-lib')
 const logs = require("aws-cdk-lib/aws-logs");
 
 class LambdaFunction1 extends Construct {

@@ -1,4 +1,4 @@
-const {ServicePrincipal, Role, PolicyStatement} = require("aws-cdk-lib/aws-iam");
+const {ServicePrincipal, Role} = require("aws-cdk-lib/aws-iam");
 const {Construct} = require('constructs')
 const iam = require("aws-cdk-lib/aws-iam");
 
